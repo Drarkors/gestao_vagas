@@ -26,33 +26,33 @@ import java.util.UUID;
 @RequestMapping("/company/job")
 public class JobController {
 
-  @Autowired
-  private CreateJobUseCase createJobUseCase;
+    @Autowired
+    private CreateJobUseCase createJobUseCase;
 
-  @Tag(name = "Vagas", description = "Informações das vagas")
-  @Operation(
-      summary = "Cadastro de vaga",
-      description = "Função responsável por cadastrar uma vaga na empresa autenticada"
-  )
-  @SecurityRequirement(name = "jwt_auth")
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", content = {
-          @Content(schema = @Schema(implementation = JobEntity.class))
-      })
-  })
-  @PostMapping("/")
-  @PreAuthorize("hasRole('COMPANY')")
-  public ResponseEntity<?> create(@RequestBody @Valid CreateJobDTO createJobDTO, HttpServletRequest request) {
-    var companyId = request.getAttribute("company_id");
+    @Tag(name = "Vagas", description = "Informações das vagas")
+    @Operation(
+        summary = "Cadastro de vaga",
+        description = "Função responsável por cadastrar uma vaga na empresa autenticada"
+    )
+    @SecurityRequirement(name = "jwt_auth")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", content = {
+            @Content(schema = @Schema(implementation = JobEntity.class))
+        })
+    })
+    @PostMapping("")
+    @PreAuthorize("hasRole('COMPANY')")
+    public ResponseEntity<?> create(@RequestBody @Valid CreateJobDTO createJobDTO, HttpServletRequest request) {
+        var companyId = request.getAttribute("company_id");
 
-    var job = JobEntity.builder()
-        .benefits(createJobDTO.getBenefits())
-        .description(createJobDTO.getDescription())
-        .level(createJobDTO.getLevel())
-        .companyId(UUID.fromString(companyId.toString()))
-        .build();
+        var job = JobEntity.builder()
+            .benefits(createJobDTO.getBenefits())
+            .description(createJobDTO.getDescription())
+            .level(createJobDTO.getLevel())
+            .companyId(UUID.fromString(companyId.toString()))
+            .build();
 
-    return ResponseEntity.ok(this.createJobUseCase.execute(job));
-  }
+        return ResponseEntity.ok(this.createJobUseCase.execute(job));
+    }
 
 }

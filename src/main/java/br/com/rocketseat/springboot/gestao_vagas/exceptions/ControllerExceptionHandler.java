@@ -15,24 +15,29 @@ import java.util.List;
 @ControllerAdvice
 public class ControllerExceptionHandler {
 
-  private final MessageSource messageSource;
+    private final MessageSource messageSource;
 
-  @Autowired
-  public ControllerExceptionHandler(MessageSource messageSource) {
-    this.messageSource = messageSource;
-  }
+    @Autowired
+    public ControllerExceptionHandler(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
-  @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<List<ErrorMessageDTO>> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
-    List<ErrorMessageDTO> dto = new ArrayList<>();
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<List<ErrorMessageDTO>> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+        List<ErrorMessageDTO> dto = new ArrayList<>();
 
-    exception.getBindingResult().getFieldErrors().forEach(err -> {
-      String message = messageSource.getMessage(err, LocaleContextHolder.getLocale());
-      var error = new ErrorMessageDTO(message, err.getField());
-      dto.add(error);
-    });
+        exception.getBindingResult().getFieldErrors().forEach(err -> {
+            String message = messageSource.getMessage(err, LocaleContextHolder.getLocale());
+            var error = new ErrorMessageDTO(message, err.getField());
+            dto.add(error);
+        });
 
-    return new ResponseEntity<>(dto, HttpStatus.BAD_REQUEST);
-  }
+        return new ResponseEntity<>(dto, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleRuntimeException(RuntimeException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 
 }

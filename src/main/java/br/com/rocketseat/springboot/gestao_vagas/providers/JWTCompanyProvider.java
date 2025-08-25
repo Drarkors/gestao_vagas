@@ -10,21 +10,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class JWTCompanyProvider {
 
-  @Value("${security.token.secret}")
-  private String secretKey;
+    @Value("${security.token.secret}")
+    private String secretKey;
 
-  public DecodedJWT validateToken(String token) {
-    token = token.replace("Bearer ", "");
+    public DecodedJWT validateToken(String token) {
+        token = token.replace("Bearer ", "");
 
-    var algorithm = Algorithm.HMAC256(secretKey);
+        var algorithm = Algorithm.HMAC256(secretKey);
 
-    try {
-      var tokenDecoded = JWT.require(algorithm).build().verify(token);
-      return tokenDecoded;
-    } catch (JWTVerificationException ex) {
-      ex.printStackTrace();
-      return null;
+        try {
+            var tokenDecoded = JWT.require(algorithm).build().verify(token);
+            return tokenDecoded;
+        } catch (JWTVerificationException ex) {
+            return null;
+        }
     }
-  }
 
 }

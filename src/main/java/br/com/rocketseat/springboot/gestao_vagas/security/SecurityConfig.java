@@ -15,37 +15,38 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @EnableMethodSecurity
 public class SecurityConfig {
 
-  private static final String[] SWAGGER_ROUTES = {
-      "/swagger-ui/**",
-      "/v3/api-docs/**",
-      "/swagger-resources/**"
-  };
+    private static final String[] PERMIT_ALL_ROUTES = {
+        "/swagger-ui/**",
+        "/v3/api-docs/**",
+        "/swagger-resources/**",
+        "/actuator/**"
+    };
 
-  @Autowired
-  private SecurityCompanyFilter securityCompanyFilter;
-  @Autowired
-  private SecurityCandidateFilter securityCandidateFilter;
+    @Autowired
+    private SecurityCompanyFilter securityCompanyFilter;
+    @Autowired
+    private SecurityCandidateFilter securityCandidateFilter;
 
-  @Bean
-  SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> {
-          auth.requestMatchers("/candidate/").permitAll()
-              .requestMatchers("/candidate/auth").permitAll()
-              .requestMatchers("/company/").permitAll()
-              .requestMatchers("/company/auth").permitAll()
-              .requestMatchers(SWAGGER_ROUTES).permitAll();
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> {
+                auth.requestMatchers("/candidate/").permitAll()
+                    .requestMatchers("/candidate/auth").permitAll()
+                    .requestMatchers("/company/").permitAll()
+                    .requestMatchers("/company/auth").permitAll()
+                    .requestMatchers(PERMIT_ALL_ROUTES).permitAll();
 
-          auth.anyRequest().authenticated();
-        })
-        .addFilterBefore(securityCandidateFilter, BasicAuthenticationFilter.class)
-        .addFilterBefore(securityCompanyFilter, BasicAuthenticationFilter.class);
+                auth.anyRequest().authenticated();
+            })
+            .addFilterBefore(securityCandidateFilter, BasicAuthenticationFilter.class)
+            .addFilterBefore(securityCompanyFilter, BasicAuthenticationFilter.class);
 
-    return http.build();
-  }
+        return http.build();
+    }
 
-  @Bean
-  PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
 }
